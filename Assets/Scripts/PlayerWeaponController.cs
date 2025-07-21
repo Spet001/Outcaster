@@ -13,20 +13,21 @@ public class PlayerWeaponController : MonoBehaviour
     // A referência à classe C# gerada pelo Input Action Asset (com o namespace correto)
     private Game.Input.StarterAssetsInputs playerInputActions; // <--- QUALIFICANDO COM O NAMESPACE
 
+    [SerializeField] private HUDManager HUDManager;
     void Awake()
     {
         // Instancia a classe gerada do Input System (com o namespace correto)
         playerInputActions = new Game.Input.StarterAssetsInputs();
 
         // Assina os callbacks (eventos) para as ações de input do Action Map 'Player'
-        playerInputActions.Player.Fire.performed += ctx => OnFire(); 
-        playerInputActions.Player.SwitchWeapon1.performed += ctx => EquipWeapon(0); 
-        playerInputActions.Player.SwitchWeapon2.performed += ctx => EquipWeapon(1); 
+        playerInputActions.Player.Fire.performed += ctx => OnFire();
+        playerInputActions.Player.SwitchWeapon1.performed += ctx => EquipWeapon(0);
+        playerInputActions.Player.SwitchWeapon2.performed += ctx => EquipWeapon(1);
     }
 
     void OnEnable()
     {
-        playerInputActions.Enable(); 
+        playerInputActions.Enable();
     }
 
     void OnDisable()
@@ -42,7 +43,7 @@ public class PlayerWeaponController : MonoBehaviour
             playerInputActions.Player.SwitchWeapon1.performed -= ctx => EquipWeapon(0);
             playerInputActions.Player.SwitchWeapon2.performed -= ctx => EquipWeapon(1);
 
-            playerInputActions.Dispose(); 
+            playerInputActions.Dispose();
             playerInputActions = null;
         }
     }
@@ -91,10 +92,28 @@ public class PlayerWeaponController : MonoBehaviour
 
         currentWeaponIndex = index;
         Debug.Log("Equipped: " + activeWeaponInstance.weaponName);
+    
+
+    if (HUDManager != null)
+        {
+            HUDManager.UpdateWeaponNameDisplay(activeWeaponInstance.weaponName);
+            // --- REMOVIDO: Inscrição e atualização de munição ---
+            // activeWeaponInstance.OnAmmoChanged += hudManager.UpdateAmmoDisplay;
+            // activeWeaponInstance.OnAmmoChanged?.Invoke(activeWeaponInstance.currentAmmo, activeWeaponInstance.maxAmmo);
+            // --- FIM REMOVIDO ---
+
+            // --- NOVO: Atualiza o portrait do jogador ---
+            HUDManager.UpdatePlayerPortrait(activeWeaponInstance.associatedPortrait);
+            // --- FIM NOVO ---
+        }
     }
+
+
 
     public void AddWeaponToInventory(WeaponBase newWeaponPrefab)
     {
         Debug.Log("Weapon " + newWeaponPrefab.weaponName + " picked up! (Logic to add to inventory not fully implemented yet)");
     }
+    
+
 }

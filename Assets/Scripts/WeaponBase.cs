@@ -1,35 +1,41 @@
 using UnityEngine;
+// REMOVIDO: using System; // Não precisamos mais de Action para OnAmmoChanged
 
 public class WeaponBase : MonoBehaviour
 {
     [Header("Configuração Básica da Arma")]
-    public string weaponName = "Shotgun";
-    public float fireRate = 0.5f;
-    protected float nextFireTime;
+    public string weaponName = "Shotgun"; // Nome para identificar a arma
+    public float fireRate = 0.5f;        // Cadência de tiro (segundos entre disparos)
+    protected float nextFireTime;        // Próximo tempo que a arma pode atirar
 
-    // --- CAMPOS PARA CONTROLE DE MUNIÇÃO ---
-    public int maxAmmo = 30;
-    protected int currentAmmo;
-    // --- FIM CAMPOS PARA MUNIÇÃO ---
+    // --- REMOVIDO: CAMPOS PARA CONTROLE DE MUNIÇÃO ---
+    // public int maxAmmo = 30;
+    // protected int currentAmmo;
+    // --- FIM REMOVIDO ---
+
+    // --- REMOVIDO: EVENTO PARA QUANDO A MUNIÇÃO MUDAR ---
+    // public event Action<int, int> OnAmmoChanged;
+    // --- FIM REMOVIDO ---
 
     [Header("Tipo de Disparo")]
-    public bool isHitscan = true;
-    public float hitscanRange = 500f;
-    public int hitscanDamage = 50;
+    public bool isHitscan = true;        // Define se a arma é hitscan
+    public float hitscanRange = 500f;     // Alcance se for hitscan
+    public int hitscanDamage = 50;       // Dano se for hitscan
 
-    public GameObject projectilePrefab;
-    public int projectileDamage = 40;
+    public GameObject projectilePrefab; // Prefab do projétil (se não for hitscan)
+    public int projectileDamage = 40;  // Dano do projétil (se não for hitscan)
 
     [Header("Referências da Arma")]
-    public Transform firePoint;
-    public GameObject muzzleFlashPrefab;
+    public Transform firePoint;          // O ponto de onde o tiro/raio sai
+    public GameObject muzzleFlashPrefab; // Efeito visual de tiro
 
     [Header("Som da Arma")]
     public AudioClip shootSound;
-    protected AudioSource audioSource;
+    protected AudioSource audioSource;   // AudioSource local da arma
 
+    // Para Animação (se tiver um Animator na arma)
     public Animator weaponAnimator;
-    public string shootAnimationTrigger = "Shoot";
+    public string shootAnimationTrigger = "Shoot"; // Nome do trigger da animação de tiro
 
     [Header("Configurações de Auto-Aim (Vertical Assist)")]
     public bool enableVerticalAutoAim = true;
@@ -40,6 +46,11 @@ public class WeaponBase : MonoBehaviour
     [HideInInspector]
     public Camera playerCamera;
 
+    // --- NOVO: Sprite do Portrait Associado a esta Arma/Estilo ---
+    [Header("Configuração de HUD")]
+    public Sprite associatedPortrait; // Arraste o sprite do portrait correspondente a esta arma
+    // --- FIM NOVO ---
+
     void Awake()
     {
         audioSource = GetComponent<AudioSource>();
@@ -49,7 +60,10 @@ public class WeaponBase : MonoBehaviour
             audioSource.playOnAwake = false;
         }
 
-        currentAmmo = maxAmmo;
+        // --- REMOVIDO: Inicialização e invocação de munição no Awake ---
+        // currentAmmo = maxAmmo;
+        // OnAmmoChanged?.Invoke(currentAmmo, maxAmmo);
+        // --- FIM REMOVIDO ---
 
         if (playerCamera == null)
         {
@@ -63,9 +77,14 @@ public class WeaponBase : MonoBehaviour
 
     public void TryFire()
     {
-        if (Time.time >= nextFireTime && currentAmmo > 0)
+        // --- MODIFICADO: Apenas verifica cadência de tiro (sem munição) ---
+        if (Time.time >= nextFireTime)
         {
-            currentAmmo--;
+            // --- REMOVIDO: Decremento de munição e invocação de evento ---
+            // currentAmmo--;
+            // OnAmmoChanged?.Invoke(currentAmmo, maxAmmo);
+            // --- FIM REMOVIDO ---
+
             nextFireTime = Time.time + fireRate;
 
             if (muzzleFlashPrefab != null)
@@ -128,66 +147,58 @@ public class WeaponBase : MonoBehaviour
                     Debug.LogWarning(weaponName + ": Projectile Prefab not assigned for non-hitscan weapon!");
                 }
             }
-            Debug.Log(weaponName + " Current Ammo: " + currentAmmo);
+            // --- REMOVIDO: Debug de munição ---
+            // Debug.Log(weaponName + " Current Ammo: " + currentAmmo);
+            // --- FIM REMOVIDO ---
         }
-        else if (currentAmmo <= 0)
-        {
-            Debug.Log(weaponName + ": No Ammo!");
-        }
+        // --- REMOVIDO: Lógica de "No Ammo!" ---
+        // else if (currentAmmo <= 0)
+        // {
+        //     Debug.Log(weaponName + ": No Ammo!");
+        //     OnAmmoChanged?.Invoke(0, maxAmmo);
+        // }
+        // --- FIM REMOVIDO ---
     }
 
     protected Transform FindAutoAimTarget()
     {
+        // ... (o restante do seu método FindAutoAimTarget permanece o mesmo) ...
         if (!enableVerticalAutoAim || playerCamera == null)
         {
-            // DEBUG: Se a câmera for nula, isso deveria ter sido pego pelo Debug.LogError no Awake.
             Debug.LogWarning("Auto-aim desativado ou playerCamera é nula. enableVerticalAutoAim: " + enableVerticalAutoAim + ", playerCamera: " + (playerCamera != null ? playerCamera.name : "NULL"));
             return null;
         }
 
-        // --- DEBUG: LOGA O PONTO DE PARTIDA DO OVERLAPSPHERE E O ALCANCE ---
         Debug.Log("FindAutoAimTarget: Buscando inimigos na Layer 'Enemy' a partir de " + playerCamera.transform.position + " com alcance de " + autoAimRange);
-        // --- FIM DEBUG ---
-
         Collider[] hitColliders = Physics.OverlapSphere(playerCamera.transform.position, autoAimRange, LayerMask.GetMask("Enemy"));
 
-        // --- DEBUG: LOGA QUANTOS COLLIDERS FORAM ENCONTRADOS INICIALMENTE ---
         Debug.Log("FindAutoAimTarget: OverlapSphere encontrou " + hitColliders.Length + " colliders.");
         if (hitColliders.Length == 0)
         {
-             // DEBUG: Se nenhum collider for encontrado aqui, o problema é na OverlapSphere ou Layer da torreta.
              Debug.LogWarning("FindAutoAimTarget: Nenhum collider encontrado pela OverlapSphere na Layer 'Enemy'. Verifique a Layer e o Collider da torreta!");
         }
-        // --- FIM DEBUG ---
 
         Transform bestTarget = null;
         float closestAngle = float.MaxValue;
 
         foreach (var hitCollider in hitColliders)
         {
-            // --- DEBUG: LOGA CADA COLLIDER ENCONTRADO ---
             Debug.Log("FindAutoAimTarget: Avaliando collider: " + hitCollider.name + " (Tag: " + hitCollider.tag + ", Layer: " + LayerMask.LayerToName(hitCollider.gameObject.layer) + ")");
-            // --- FIM DEBUG ---
 
             if (!hitCollider.CompareTag("Enemy"))
             {
-                // --- DEBUG: LOGA SE O COLLIDER NÃO TEM A TAG "Enemy" ---
                 Debug.Log("FindAutoAimTarget: Collider " + hitCollider.name + " não tem a Tag 'Enemy', ignorando.");
-                // --- FIM DEBUG ---
                 continue;
             }
 
             Vector3 directionToTarget = (hitCollider.transform.position - playerCamera.transform.position).normalized;
-
             Vector3 cameraForwardFlat = new Vector3(playerCamera.transform.forward.x, 0, playerCamera.transform.forward.z).normalized;
             Vector3 directionToTargetFlat = new Vector3(directionToTarget.x, 0, directionToTarget.z).normalized;
 
             float angleToTarget = Vector3.Angle(cameraForwardFlat, directionToTargetFlat);
 
-            // --- DEBUG: LOGA ÂNGULO E DIFERENÇA VERTICAL ---
             float verticalDifference = Mathf.Abs(hitCollider.transform.position.y - playerCamera.transform.position.y);
             Debug.Log("FindAutoAimTarget: " + hitCollider.name + " - Angle: " + angleToTarget + " (Max: " + autoAimHorizontalAngle + "), Vertical Diff: " + verticalDifference + " (Max: " + autoAimVerticalTolerance + ")");
-            // --- FIM DEBUG ---
 
             if (angleToTarget <= autoAimHorizontalAngle)
             {
@@ -197,28 +208,20 @@ public class WeaponBase : MonoBehaviour
                     {
                         closestAngle = angleToTarget;
                         bestTarget = hitCollider.transform;
-                        // --- DEBUG: LOGA QUE UM NOVO MELHOR ALVO FOI ENCONTRADO ---
                         Debug.Log("FindAutoAimTarget: Novo melhor alvo encontrado: " + bestTarget.name);
-                        // --- FIM DEBUG ---
                     }
                 }
                 else
                 {
-                    // --- DEBUG: LOGA SE A DIFERENÇA VERTICAL ESTÁ FORA ---
                     Debug.Log("FindAutoAimTarget: " + hitCollider.name + " fora da tolerância vertical.");
-                    // --- FIM DEBUG ---
                 }
             }
             else
             {
-                // --- DEBUG: LOGA SE O ÂNGULO HORIZONTAL ESTÁ FORA ---
                 Debug.Log("FindAutoAimTarget: " + hitCollider.name + " fora do ângulo horizontal.");
-                // --- FIM DEBUG ---
             }
         }
-        // --- DEBUG: LOGA O ALVO FINAL RETORNADO ---
         Debug.Log("FindAutoAimTarget: Alvo final retornado: " + (bestTarget != null ? bestTarget.name : "NENHUM"));
-        // --- FIM DEBUG ---
         return bestTarget;
     }
 }

@@ -119,7 +119,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   weaponName: Shotgun
   fireRate: 0.5
-  maxAmmo: 30
   isHitscan: 1
   hitscanRange: 500
   hitscanDamage: 50
@@ -135,6 +134,7 @@ MonoBehaviour:
   autoAimVerticalTolerance: 500
   autoAimHorizontalAngle: 15
   playerCamera: {fileID: 0}
+  associatedPortrait: {fileID: 21300000, guid: 5294533c5a9827a40bd4987b0868330f, type: 3}
 --- !u!1 &6003913570969650766
 GameObject:
   m_ObjectHideFlags: 0

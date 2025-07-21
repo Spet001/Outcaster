@@ -1,7 +1,6 @@
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-
+using TMPro; // Para TextMeshProUGUI
+using UnityEngine.UI; // Para Image (barras)
 
 public class PlayerStats : MonoBehaviour
 {
@@ -10,10 +9,16 @@ public class PlayerStats : MonoBehaviour
 
     public int maxArmor = 30;
     public int armor = 30;
-    
-public TextMeshProUGUI healthText;
-public TextMeshProUGUI armorText;
 
+    [Header("Elementos UI (Texto)")]
+    public TextMeshProUGUI healthText;
+    public TextMeshProUGUI armorText;
+
+    // --- NOVO: Elementos UI (Barras) ---
+    [Header("Elementos UI (Barras)")]
+    public Image healthBarImage; // Arraste a imagem da barra de vida aqui
+    public Image armorBarImage;  // Arraste a imagem da barra de armadura aqui
+    // --- FIM NOVO ---
 
     private void Start()
     {
@@ -46,8 +51,20 @@ public TextMeshProUGUI armorText;
 
     void UpdateHUD()
     {
+        // Atualiza textos
         if (healthText != null) healthText.text = "Health: " + health;
         if (armorText != null) armorText.text = "Armor: " + armor;
+
+        // --- NOVO: Atualiza barras de vida e armadura ---
+        if (healthBarImage != null)
+        {
+            healthBarImage.fillAmount = (float)health / maxHealth;
+        }
+        if (armorBarImage != null)
+        {
+            armorBarImage.fillAmount = (float)armor / maxArmor;
+        }
+        // --- FIM NOVO ---
     }
 
     public void Heal(int amount)
