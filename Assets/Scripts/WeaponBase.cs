@@ -90,7 +90,9 @@ public class WeaponBase : MonoBehaviour
             if (muzzleFlashPrefab != null)
             {
                 GameObject flash = Instantiate(muzzleFlashPrefab, firePoint.position, firePoint.rotation);
-                Destroy(flash, 0.1f);
+                    flash.transform.SetParent(firePoint); // agora ele segue o firepoint
+                    Destroy(flash, 0.6f);
+
             }
             if (audioSource != null && shootSound != null)
             {
@@ -118,10 +120,10 @@ public class WeaponBase : MonoBehaviour
                     Debug.Log(weaponName + " Hit: " + hit.collider.name + " at " + hit.point);
                     if (hit.collider.CompareTag("Enemy"))
                     {
-                        EnemyHealth enemyHealth = hit.collider.GetComponent<EnemyHealth>();
-                        if (enemyHealth != null)
-                        {
-                            enemyHealth.TakeDamage(hitscanDamage);
+                       IDamageable damageable = hit.collider.GetComponent<IDamageable>();
+                        if (damageable != null)
+                    {
+                            damageable.TakeDamage(hitscanDamage);
                         }
                     }
                 }

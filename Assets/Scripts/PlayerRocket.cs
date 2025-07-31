@@ -48,10 +48,10 @@ public class PlayerProjectile : MonoBehaviour
         if (other.CompareTag("Enemy"))
         {
             // Tenta encontrar um script de saúde no inimigo e causar dano
-            EnemyHealth enemyHealth = other.GetComponent<EnemyHealth>();
-            if (enemyHealth != null)
+            IDamageable damageable = other.GetComponent<IDamageable>();
+            if (damageable != null)
             {
-                enemyHealth.TakeDamage(damage);
+                damageable.TakeDamage(damage);
                 Debug.Log("Player Projectile hit Enemy and caused " + damage + " damage!");
             }
         }

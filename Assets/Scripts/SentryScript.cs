@@ -11,22 +11,33 @@ public class SentryGun : MonoBehaviour
     public float fireRate = 1.5f;        // Tempo entre os disparos
     private float nextFireTime;          // O próximo tempo que a torreta poderá disparar
 
-    void Update()
+    
+   void Update()
+{
+    if (playerTarget != null && firePoint != null)
     {
-        // Garante que temos um alvo e um ponto de disparo
-        if (playerTarget != null && firePoint != null)
-        {
-            // Faz o FirePoint (e, portanto, a torreta) olhar para o jogador
-            firePoint.LookAt(playerTarget.position);
+        firePoint.LookAt(playerTarget.position);
 
-            // Verifica se é hora de disparar
-            if (Time.time >= nextFireTime)
+        // Raycast para verificar se a sentry realmente vê o player
+        Vector3 directionToPlayer = playerTarget.position - firePoint.position;
+        float distanceToPlayer = directionToPlayer.magnitude;
+
+        RaycastHit hit;
+        if (Physics.Raycast(firePoint.position, directionToPlayer.normalized, out hit, distanceToPlayer))
+        {
+            // Verifica se o Raycast atingiu o player
+            if (hit.transform == playerTarget)
             {
-                FireProjectile();
-                nextFireTime = Time.time + fireRate; // Reseta o timer para o próximo disparo
+                if (Time.time >= nextFireTime)
+                {
+                    FireProjectile();
+                    nextFireTime = Time.time + fireRate;
+                }
             }
         }
     }
+}
+
 
     void FireProjectile()
     {

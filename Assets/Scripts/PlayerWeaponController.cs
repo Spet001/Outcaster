@@ -8,7 +8,7 @@ public class PlayerWeaponController : MonoBehaviour
     public WeaponBase[] weaponPrefabs;
     public int currentWeaponIndex = 0;
 
-    private WeaponBase activeWeaponInstance;
+    public WeaponBase activeWeaponInstance;
 
     // A referência à classe C# gerada pelo Input Action Asset (com o namespace correto)
     private Game.Input.StarterAssetsInputs playerInputActions; // <--- QUALIFICANDO COM O NAMESPACE
