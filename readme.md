@@ -3,13 +3,13 @@
 **1\. Visão Geral do Jogo** - **Nome**: Outcaster - **Gênero**: Boomer Shooter / FPS retrô com influências de character action - **Estilo visual**: Mistura de 2.5D com sprites pixelados e elementos 3D - **Plataforma alvo**: PC - **Engine**: Unity 6  
 <br/>
 
-![image1](MD images/1.png)
+![image1](MDimages/1.png)
 
 **2\. Ponto de Diferenciação (USP)** - Sistema de “estilos de combate” inspirados em character action games (Yakuza 0, Devil May Cry) - Apenas 4 armas, cada uma tratada como um “estilo de luta” com habilidades e comportamentos únicos - Combinação de combate retrô com ação estilizada e exagerada - Trilha sonora misturando influências de Doom, Devil May Cry, Yakuza 0 e ShootieHG (FF13-2)  
 
 **3\. Mecânicas principais** - Combate em primeira pessoa com auto-aim vertical (estilo Doom clássico) - Troca de estilo/arma em tempo real (teclas 1 a 4 ou botões de atalho) - Cada estilo tem comportamento distinto, incluindo ataques primários, especiais e possibilidade de “combos”
 
-![image2](MD images/2.png)
+![image2](MDimages/2.png)
 
 **4\. Sistema de Estilos** Os estilos substituem o sistema clássico de 9 armas do Doom. Cada um representa uma arma que define completamente a maneira como o jogador interage com o combate.
 
